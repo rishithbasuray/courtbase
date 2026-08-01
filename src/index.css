@@ -1,16 +1,17 @@
 :root {
-  --text: #4b5563;
-  --text-h: #0f172a;
-  --bg: #fafafa;
-  --border: #e2e2e2;
+  /* Basketball palette: court orange + charcoal + warm cream */
+  --text: #4b5563;           /* body text on light backgrounds */
+  --text-h: #1a1a1a;         /* headings on light backgrounds */
+  --text-on-dark: #F5F5F0;   /* text used on dark/charcoal sections */
+  --bg: #FFF8F0;             /* warm cream page background */
+  --bg-dark: #1B1B1B;        /* charcoal, used for hero/dark sections */
+  --border: #e5ded2;
   --code-bg: #f4f3ec;
 
-  --accent: #ff5a1f;         /* energetic orange */
-  --accent-bg: rgba(255, 90, 31, 0.1);
-  --accent-border: rgba(255, 90, 31, 0.5);
-
-  --accent-2: #0ea5e9;       /* electric blue, secondary */
-  --accent-2-bg: rgba(14, 165, 233, 0.1);
+  --accent: #EA580C;         /* basketball orange */
+  --accent-hover: #C2410C;   /* darker orange for hover states */
+  --accent-bg: rgba(234, 88, 12, 0.1);
+  --accent-border: rgba(234, 88, 12, 0.5);
 
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow: rgba(0, 0, 0, 0.12) 0 10px 20px -5px, rgba(0, 0, 0, 0.08) 0 4px 8px -2px;
@@ -31,23 +32,6 @@
 
   @media (max-width: 1024px) {
     font-size: 16px;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f8fafc;
-    --bg: #0b0d12;
-    --border: #262a33;
-    --code-bg: #1a1c22;
-    --accent: #ff7a45;
-    --accent-bg: rgba(255, 122, 69, 0.15);
-    --accent-border: rgba(255, 122, 69, 0.5);
-    --accent-2: #38bdf8;
-    --accent-2-bg: rgba(56, 189, 248, 0.15);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow: rgba(0, 0, 0, 0.4) 0 10px 20px -5px, rgba(0, 0, 0, 0.3) 0 4px 8px -2px;
   }
 }
 
@@ -115,6 +99,7 @@ button, .btn {
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {
+    background: var(--accent-hover);
     transform: translateY(-2px);
     box-shadow: var(--shadow);
   }

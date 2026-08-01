@@ -1,6 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <>
       {/* HERO SECTION */}
@@ -15,9 +18,11 @@ export default function Home() {
           </p>
 
           <div className="hero-buttons">
-            <button className="primary-btn">Get Started</button>
+            <button className="primary-btn" onClick={() => navigate("/register")}>
+              Get Started
+            </button>
 
-            <button className="secondary-btn">
+            <button className="secondary-btn" onClick={() => navigate("/players")}>
               Explore Players
             </button>
           </div>

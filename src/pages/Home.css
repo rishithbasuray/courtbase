@@ -3,8 +3,8 @@
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background: #FFF8F0;
-    color: #1F2937;
+    background: var(--bg);
+    color: var(--text);
 }
 
 .container {
@@ -16,8 +16,8 @@ body {
 /* ---------- HERO ---------- */
 
 .hero {
-    background: linear-gradient(135deg,#111827,#1F2937);
-    color: white;
+    background: linear-gradient(135deg, var(--bg-dark), #2b2b2b);
+    color: var(--text-on-dark);
     min-height: 90vh;
 
     display: flex;
@@ -33,7 +33,10 @@ body {
     max-width: 850px;
 }
 
+/* Explicit color here beats the global h1 rule in index.css,
+   which would otherwise render dark text on this dark background */
 .hero h1 {
+    color: var(--text-on-dark);
     font-size: 4rem;
     margin-bottom: 25px;
     line-height: 1.2;
@@ -41,7 +44,7 @@ body {
 
 .hero p {
     font-size: 1.25rem;
-    color: #d1d5db;
+    color: #d9d3c7;
     line-height: 1.8;
 }
 
@@ -56,7 +59,7 @@ body {
 }
 
 .primary-btn {
-    background: #D97706;
+    background: var(--accent);
     color: white;
 
     border: none;
@@ -73,15 +76,15 @@ body {
 }
 
 .primary-btn:hover {
-    background: #B45309;
+    background: var(--accent-hover);
 }
 
 .secondary-btn {
     background: transparent;
 
-    color: white;
+    color: var(--text-on-dark);
 
-    border: 2px solid white;
+    border: 2px solid var(--text-on-dark);
 
     padding: 15px 35px;
 
@@ -95,8 +98,8 @@ body {
 }
 
 .secondary-btn:hover {
-    background: white;
-    color: #111827;
+    background: var(--text-on-dark);
+    color: var(--bg-dark);
 }
 
 /* ---------- ABOUT ---------- */
@@ -114,7 +117,7 @@ body {
 
     font-size: 2.5rem;
 
-    color: #D97706;
+    color: var(--accent);
 
     margin-bottom: 25px;
 }
@@ -147,7 +150,7 @@ body {
 
     font-size: 2.5rem;
 
-    color: #D97706;
+    color: var(--accent);
 
     margin-bottom: 25px;
 }

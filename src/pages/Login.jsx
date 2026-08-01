@@ -1,10 +1,52 @@
-function Login() {
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import "./Auth.css";
+
+export default function Login() {
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+
+  function handleChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    setError("");
+    try {
+      login(form);
+      navigate("/profile");
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   return (
-    <div>
-      <h1>Login</h1>
-      <p>Sign in to CourtBase.</p>
+    <div className="auth-page">
+      <form className="auth-card" onSubmit={handleSubmit}>
+        <h1>Login</h1>
+        <p className="auth-subtext">Sign in to CourtBase.</p>
+
+        {error && <div className="auth-error">{error}</div>}
+
+        <label>Email</label>
+        <input name="email" type="email" value={form.email} onChange={handleChange} placeholder="you@example.com" />
+
+        <label>Password</label>
+        <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" />
+
+        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }}>
+          Log In
+        </button>
+
+        <p className="auth-footer">
+          Don't have an account? <Link to="/register">Register</Link>
+        </p>
+      </form>
     </div>
   );
 }
-
-export default Login;

@@ -1,0 +1,275 @@
+/* Shared styles for Players, Teams, PlayerProfile, TeamProfile, About, NotFound */
+
+.page-header {
+  padding: 60px 0 30px;
+  text-align: center;
+}
+
+.page-header h1 {
+  margin-bottom: 10px;
+}
+
+.page-header p {
+  color: var(--text);
+  font-size: 1.1rem;
+}
+
+/* ---------- CARD GRID (Players / Teams list) ---------- */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+  padding: 20px 0 80px;
+}
+
+.card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: block;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow);
+}
+
+.card h3 {
+  margin: 0 0 6px;
+  font-size: 1.3rem;
+  color: var(--text-h);
+}
+
+.card .subtext {
+  color: var(--text);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-verified {
+  background: rgba(22, 163, 74, 0.12);
+  color: #15803d;
+}
+
+.badge-unverified {
+  background: rgba(107, 114, 128, 0.12);
+  color: #6b7280;
+}
+
+.card-stat-line {
+  display: flex;
+  gap: 18px;
+  margin-top: 14px;
+  font-size: 0.9rem;
+  color: var(--text);
+}
+
+.card-stat-line strong {
+  color: var(--text-h);
+  display: block;
+  font-size: 1.1rem;
+}
+
+/* ---------- PROFILE HEADER (Player / Team detail) ---------- */
+
+.profile-header {
+  background: var(--bg-dark);
+  color: var(--text-on-dark);
+  padding: 50px 0;
+}
+
+.profile-header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.profile-header h1 {
+  color: var(--text-on-dark);
+  margin: 0 0 8px;
+}
+
+.profile-header .meta {
+  color: #d9d3c7;
+  font-size: 1.05rem;
+}
+
+/* ---------- STATS TABLE ---------- */
+
+.stats-section {
+  padding: 50px 0;
+}
+
+.stats-section h2 {
+  margin-bottom: 20px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.stat-box {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-box .value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.stat-box .label {
+  font-size: 0.8rem;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+
+/* ---------- HIGHLIGHTS ---------- */
+
+.highlight-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.highlight-list li {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.highlight-list a {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ---------- ROSTER (Team profile) ---------- */
+
+.roster-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.roster-list a {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-decoration: none;
+  color: var(--text-h);
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.roster-list a:hover {
+  border-color: var(--accent);
+}
+
+/* ---------- ABOUT PAGE ---------- */
+
+.about-section {
+  padding: 60px 0;
+}
+
+.about-section:nth-child(even) {
+  background: white;
+}
+
+.about-section h2 {
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.about-section ul {
+  line-height: 1.9;
+  color: var(--text);
+  max-width: 800px;
+}
+
+.step-list {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.step-list li {
+  counter-increment: step;
+  position: relative;
+  padding-left: 50px;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.step-list li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+/* ---------- 404 ---------- */
+
+.not-found {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+
+.not-found h1 {
+  font-size: 5rem;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
