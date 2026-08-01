@@ -9,19 +9,23 @@ export default function Login() {
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setSubmitting(true);
     try {
-      login(form);
+      await login(form);
       navigate("/profile");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -39,8 +43,8 @@ export default function Login() {
         <label>Password</label>
         <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" />
 
-        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }}>
-          Log In
+        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }} disabled={submitting}>
+          {submitting ? "Logging In..." : "Log In"}
         </button>
 
         <p className="auth-footer">

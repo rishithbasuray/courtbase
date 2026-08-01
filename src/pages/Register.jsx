@@ -9,20 +9,30 @@ export default function Register() {
 
   const [form, setForm] = useState({ name: "", email: "", password: "", role: "Player", position: "" });
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+
     if (!form.name || !form.email || !form.password) {
       setError("Please fill in all required fields.");
       return;
     }
-    register(form);
-    navigate("/profile");
+
+    setSubmitting(true);
+    try {
+      await register(form);
+      navigate("/profile");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -57,8 +67,8 @@ export default function Register() {
           </>
         )}
 
-        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }}>
-          Create Account
+        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }} disabled={submitting}>
+          {submitting ? "Creating Account..." : "Create Account"}
         </button>
 
         <p className="auth-footer">

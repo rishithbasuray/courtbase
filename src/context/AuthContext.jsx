@@ -1,8 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
-
-const STORAGE_KEY = "courtbase_user";
 
 const emptyStats = {
   gamesPlayed: 0, minutes: 0, points: 0, assists: 0, rebounds: 0,
@@ -16,51 +15,79 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setUser(JSON.parse(saved));
-    } catch (err) {
-      console.error("Failed to load saved user:", err);
-    }
-    setLoading(false);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        loadProfile(session.user.id);
+      } else {
+        setLoading(false);
+      }
+    });
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        loadProfile(session.user.id);
+      } else {
+        setUser(null);
+        setLoading(false);
+      }
+    });
+
+    return () => listener.subscription.unsubscribe();
   }, []);
 
-  function persist(nextUser) {
-    setUser(nextUser);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+  async function loadProfile(userId) {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", userId)
+      .single();
+
+    if (error) {
+      console.error("Failed to load profile:", error);
+    } else {
+      setUser(data);
+    }
+    setLoading(false);
   }
 
-  function register({ name, email, password, role, position }) {
-    const newUser = {
-      name, email, password, role,
+  async function register({ name, email, password, role, position }) {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+
+    const { error: profileError } = await supabase.from("profiles").insert({
+      id: data.user.id,
+      name,
+      email,
+      role,
       position: position || "",
       verified: false,
       stats: emptyStats,
-      highlights: [],
-    };
-    persist(newUser);
-    return newUser;
-  }
+    });
+    if (profileError) throw profileError;
 
-  function login({ email, password }) {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) throw new Error("No account found. Please register first.");
-    const savedUser = JSON.parse(saved);
-    if (savedUser.email !== email || savedUser.password !== password) {
-      throw new Error("Incorrect email or password.");
+    if (data.session) {
+      await loadProfile(data.user.id);
     }
-    setUser(savedUser);
-    return savedUser;
   }
 
-  function logout() {
-    setUser(null);
+  async function login({ email, password }) {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
   }
 
-  function updateStats(newStats) {
+  async function logout() {
+    await supabase.auth.signOut();
+  }
+
+  async function updateStats(newStats) {
     if (!user) return;
-    const nextUser = { ...user, stats: { ...user.stats, ...newStats } };
-    persist(nextUser);
+    const merged = { ...user.stats, ...newStats };
+    const { error } = await supabase
+      .from("profiles")
+      .update({ stats: merged })
+      .eq("id", user.id);
+    if (error) throw error;
+    setUser({ ...user, stats: merged });
   }
 
   return (
