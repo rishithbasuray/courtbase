@@ -62,6 +62,7 @@ export function AuthProvider({ children }) {
       position: position || "",
       verified: false,
       stats: emptyStats,
+      team_id: null,
     });
     if (profileError) throw profileError;
 
@@ -90,8 +91,18 @@ export function AuthProvider({ children }) {
     setUser({ ...user, stats: merged });
   }
 
+  async function setTeam(teamId) {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ team_id: teamId })
+      .eq("id", user.id);
+    if (error) throw error;
+    setUser({ ...user, team_id: teamId });
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateStats }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateStats, setTeam }}>
       {children}
     </AuthContext.Provider>
   );

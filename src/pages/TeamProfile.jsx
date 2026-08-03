@@ -1,12 +1,51 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { teams, players } from "../data/mockData";
+import { supabase } from "../lib/supabase";
 import "./Discovery.css";
 
 export default function TeamProfile() {
   const { id } = useParams();
-  const team = teams.find((t) => t.id === id);
+  const [team, setTeam] = useState(null);
+  const [roster, setRoster] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!team) {
+  useEffect(() => {
+    async function fetchTeam() {
+      const { data: teamData, error: teamError } = await supabase
+        .from("teams")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (teamError) {
+        setError("Team not found.");
+        setLoading(false);
+        return;
+      }
+
+      const { data: rosterData } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("team_id", id);
+
+      setTeam(teamData);
+      setRoster(rosterData || []);
+      setLoading(false);
+    }
+
+    fetchTeam();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="container">
+        <p style={{ textAlign: "center", color: "var(--text)", padding: "60px 0" }}>Loading team...</p>
+      </div>
+    );
+  }
+
+  if (error || !team) {
     return (
       <div className="container">
         <div className="page-header">
@@ -17,20 +56,14 @@ export default function TeamProfile() {
     );
   }
 
-  const roster = players.filter((p) => team.rosterIds.includes(p.id));
-
   return (
     <>
       <div className="profile-header">
         <div className="container">
           <div>
             <h1>{team.name}</h1>
-            <p className="meta">{team.city} · {team.coach}</p>
+            <p className="meta">{team.city || "City not set"} · Coach: {team.coach || "Not set"}</p>
           </div>
-
-          <span className="badge badge-verified">
-            {team.record.wins}W - {team.record.losses}L
-          </span>
         </div>
       </div>
 
@@ -45,7 +78,9 @@ export default function TeamProfile() {
               {roster.map((player) => (
                 <Link to={`/players/${player.id}`} key={player.id}>
                   <span>{player.name}</span>
-                  <span style={{ color: "var(--text)", fontWeight: 400 }}>{player.position}</span>
+                  <span style={{ color: "var(--text)", fontWeight: 400 }}>
+                    {player.position || "Position not set"}
+                  </span>
                 </Link>
               ))}
             </div>
