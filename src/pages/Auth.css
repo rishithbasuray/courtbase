@@ -59,3 +59,9 @@
   color: var(--text);
   font-size: 0.9rem;
 }
+
+@media (max-width: 500px) {
+  .auth-card {
+    padding: 26px 20px;
+  }
+}

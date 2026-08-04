@@ -1,47 +1,65 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import "./Navbar.css";
 
 function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  function handleLogout() {
-    logout();
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  async function handleLogout() {
+    await logout();
+    closeMenu();
     navigate("/");
   }
 
   return (
-    <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 60px", background: "var(--bg-dark)" }}>
-      <Link to="/" style={{ textDecoration: "none" }}>
-        <h2 style={{ color: "var(--text-on-dark)", margin: 0 }}>🏀 CourtBase</h2>
-      </Link>
+    <nav className="navbar">
+      <div className="navbar-inner">
+        <Link to="/" className="navbar-logo" onClick={closeMenu}>
+          <h2>🏀 CourtBase</h2>
+        </Link>
 
-      <div style={{ display: "flex", gap: "28px", alignItems: "center" }}>
-        <Link to="/" style={navLink}>Home</Link>
-        <Link to="/players" style={navLink}>Players</Link>
-        <Link to="/teams" style={navLink}>Teams</Link>
-        <Link to="/about" style={navLink}>About</Link>
+        <button
+          className="navbar-toggle"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
 
-        {user ? (
-          <>
-            <Link to="/profile" style={navLink}>My Profile</Link>
-            <button onClick={handleLogout} style={{ ...navLink, background: "transparent", border: "1px solid var(--text-on-dark)", padding: "8px 18px", borderRadius: "8px", cursor: "pointer" }}>
-              Log Out
-            </button>
-          </>
-        ) : (
-          <>
-            <Link to="/login" style={navLink}>Login</Link>
-            <Link to="/register" style={{ ...navLink, background: "var(--accent)", padding: "10px 20px", borderRadius: "8px" }}>
-              Register
-            </Link>
-          </>
-        )}
+        <div className={`navbar-links ${menuOpen ? "open" : ""}`}>
+          <Link to="/" className="navbar-link" onClick={closeMenu}>Home</Link>
+          <Link to="/players" className="navbar-link" onClick={closeMenu}>Players</Link>
+          <Link to="/teams" className="navbar-link" onClick={closeMenu}>Teams</Link>
+          <Link to="/about" className="navbar-link" onClick={closeMenu}>About</Link>
+
+          {user ? (
+            <>
+              <Link to="/profile" className="navbar-link" onClick={closeMenu}>My Profile</Link>
+              <button className="navbar-link navbar-logout" onClick={handleLogout}>
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="navbar-link" onClick={closeMenu}>Login</Link>
+              <Link to="/register" className="navbar-link navbar-register" onClick={closeMenu}>
+                Register
+              </Link>
+            </>
+          )}
+        </div>
       </div>
     </nav>
   );
 }
-
-const navLink = { color: "var(--text-on-dark)", textDecoration: "none", fontWeight: 600 };
 
 export default Navbar;

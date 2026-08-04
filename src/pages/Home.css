@@ -167,3 +167,49 @@ body {
 
     margin: auto;
 }
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 900px) {
+    .hero h1 {
+        font-size: 2.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .hero {
+        padding: 30px 20px;
+        min-height: 70vh;
+    }
+
+    .hero h1 {
+        font-size: 2.1rem;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        width: 100%;
+        gap: 14px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 14px 20px;
+    }
+
+    .about h2,
+    .mission h2 {
+        font-size: 1.8rem;
+    }
+
+    .about,
+    .mission {
+        padding: 50px 0;
+    }
+}

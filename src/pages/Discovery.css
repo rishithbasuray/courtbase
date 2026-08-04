@@ -346,6 +346,29 @@
   gap: 12px;
   justify-content: center;
 }
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 600px) {
+  .profile-header {
+    padding: 30px 0;
+  }
+
+  .profile-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.9rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-grid {
+    grid-template-columns: 1fr;
+  }
+}
 /* ---------- 404 ---------- */
 
 .not-found {
