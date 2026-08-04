@@ -346,6 +346,30 @@
   gap: 12px;
   justify-content: center;
 }
+/* ---------- STATS SECTION FORMS (highlights, create team) ---------- */
+
+.stats-section form label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-h);
+  margin: 14px 0 6px;
+}
+
+.stats-section form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.stats-section form input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
 /* ---------- RESPONSIVE ---------- */
 
 @media (max-width: 600px) {

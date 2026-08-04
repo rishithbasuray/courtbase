@@ -13,6 +13,12 @@ const statFields = [
   ["ftm", "FTM"], ["fta", "FTA"], ["ftPct", "FT%"],
 ];
 
+function detectType(url) {
+  if (/youtube\.com|youtu\.be/i.test(url)) return "youtube";
+  if (/drive\.google\.com/i.test(url)) return "drive";
+  return null;
+}
+
 export default function Profile() {
   const { user, updateStats, setTeam, logout } = useAuth();
   const [editing, setEditing] = useState(false);
@@ -28,8 +34,16 @@ export default function Profile() {
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const blurTimeout = useRef(null);
 
+  const [highlights, setHighlights] = useState([]);
+  const [highlightsLoading, setHighlightsLoading] = useState(true);
+  const [newHighlight, setNewHighlight] = useState({ title: "", url: "" });
+  const [highlightError, setHighlightError] = useState("");
+  const [addingHighlight, setAddingHighlight] = useState(false);
+  const [highlightToDelete, setHighlightToDelete] = useState(null);
+
   useEffect(() => {
     fetchTeams();
+    fetchHighlights();
   }, []);
 
   useEffect(() => {
@@ -40,6 +54,65 @@ export default function Profile() {
   async function fetchTeams() {
     const { data } = await supabase.from("teams").select("*").order("name");
     setTeams(data || []);
+  }
+
+  async function fetchHighlights() {
+    const { data, error } = await supabase
+      .from("highlights")
+      .select("*")
+      .eq("player_id", user.id)
+      .order("created_at", { ascending: false });
+
+    if (!error) setHighlights(data || []);
+    setHighlightsLoading(false);
+  }
+
+  async function handleAddHighlight(e) {
+    e.preventDefault();
+    setHighlightError("");
+
+    if (!newHighlight.title || !newHighlight.url) {
+      setHighlightError("Please fill in both a title and a link.");
+      return;
+    }
+
+    const type = detectType(newHighlight.url);
+    if (!type) {
+      setHighlightError("Please use a YouTube or Google Drive link.");
+      return;
+    }
+
+    setAddingHighlight(true);
+    const { error } = await supabase.from("highlights").insert({
+      player_id: user.id,
+      title: newHighlight.title,
+      url: newHighlight.url,
+      type,
+    });
+    setAddingHighlight(false);
+
+    if (error) {
+      setHighlightError(error.message);
+      return;
+    }
+
+    setNewHighlight({ title: "", url: "" });
+    fetchHighlights();
+  }
+
+  async function handleDeleteHighlight(id) {
+    const { error } = await supabase.from("highlights").delete().eq("id", id);
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    setHighlights(highlights.filter((h) => h.id !== id));
+  }
+
+  async function confirmDeleteHighlight() {
+    if (!highlightToDelete) return;
+    await handleDeleteHighlight(highlightToDelete.id);
+    setHighlightToDelete(null);
   }
 
   const filteredTeams = teams.filter((t) =>
@@ -218,6 +291,60 @@ export default function Profile() {
         )}
 
         <div className="stats-section">
+          <h2>My Highlights</h2>
+
+          {highlightsLoading ? (
+            <p style={{ color: "var(--text)" }}>Loading highlights...</p>
+          ) : highlights.length === 0 ? (
+            <p style={{ color: "var(--text)", marginBottom: 16 }}>
+              No highlights added yet.
+            </p>
+          ) : (
+            <ul className="highlight-list" style={{ marginBottom: 20 }}>
+              {highlights.map((h) => (
+                <li key={h.id}>
+                  <span>{h.title}</span>
+                  <span style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                    <a href={h.url} target="_blank" rel="noreferrer">
+                      Watch ({h.type})
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setHighlightToDelete(h)}
+                      style={{ background: "none", border: "none", color: "#b91c1c", cursor: "pointer", fontWeight: 700, padding: 0 }}
+                    >
+                      Remove
+                    </button>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <form onSubmit={handleAddHighlight} style={{ maxWidth: 420 }}>
+            {highlightError && <div className="auth-error">{highlightError}</div>}
+
+            <label>Title</label>
+            <input
+              value={newHighlight.title}
+              onChange={(e) => setNewHighlight({ ...newHighlight, title: e.target.value })}
+              placeholder="Season Highlight Reel"
+            />
+
+            <label>YouTube or Google Drive Link</label>
+            <input
+              value={newHighlight.url}
+              onChange={(e) => setNewHighlight({ ...newHighlight, url: e.target.value })}
+              placeholder="https://youtube.com/..."
+            />
+
+            <button type="submit" className="primary-btn" style={{ marginTop: 14 }} disabled={addingHighlight}>
+              {addingHighlight ? "Adding..." : "+ Add Highlight"}
+            </button>
+          </form>
+        </div>
+
+        <div className="stats-section">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2>My Statistics</h2>
             {!editing && (
@@ -307,6 +434,22 @@ export default function Profile() {
                 style={{ background: "#6b7280" }}
                 onClick={() => setShowLeaveConfirm(false)}
               >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {highlightToDelete && (
+        <div className="modal-overlay" onClick={() => setHighlightToDelete(null)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>Remove "{highlightToDelete.title}"?</h3>
+            <p>This will permanently remove this highlight from your profile.</p>
+            <div className="modal-actions">
+              <button className="primary-btn" style={{ background: "#b91c1c" }} onClick={confirmDeleteHighlight}>
+                Yes, Remove
+              </button>
+              <button className="primary-btn" style={{ background: "#6b7280" }} onClick={() => setHighlightToDelete(null)}>
                 Cancel
               </button>
             </div>

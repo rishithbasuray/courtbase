@@ -7,6 +7,7 @@ export default function PlayerProfile() {
   const { id } = useParams();
   const [player, setPlayer] = useState(null);
   const [teamName, setTeamName] = useState(null);
+  const [highlights, setHighlights] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -34,6 +35,13 @@ export default function PlayerProfile() {
           .single();
         setTeamName(team?.name || null);
       }
+
+      const { data: highlightData } = await supabase
+        .from("highlights")
+        .select("*")
+        .eq("player_id", id)
+        .order("created_at", { ascending: false });
+      setHighlights(highlightData || []);
 
       setLoading(false);
     }
@@ -108,7 +116,20 @@ export default function PlayerProfile() {
           </div>
 
           <h2>Highlights</h2>
-          <p style={{ color: "var(--text)" }}>No highlights uploaded yet.</p>
+          {highlights.length === 0 ? (
+            <p style={{ color: "var(--text)" }}>No highlights uploaded yet.</p>
+          ) : (
+            <ul className="highlight-list">
+              {highlights.map((h) => (
+                <li key={h.id}>
+                  <span>{h.title}</span>
+                  <a href={h.url} target="_blank" rel="noreferrer">
+                    Watch ({h.type})
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
     </>
