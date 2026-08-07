@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
       .from("profiles")
       .select("*")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error("Failed to load profile:", error);
@@ -50,11 +50,23 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
 
-  async function register({ name, email, password, role, position }) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
+async function register({ name, email, password, role, position }) {
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
 
-    const { error: profileError } = await supabase.from("profiles").insert({
+  console.log("Signup:", data);
+
+  if (error) throw error;
+
+  if (!data.user) {
+    throw new Error("No user returned from Supabase.");
+  }
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert({
       id: data.user.id,
       name,
       email,
@@ -64,12 +76,17 @@ export function AuthProvider({ children }) {
       stats: emptyStats,
       team_id: null,
     });
-    if (profileError) throw profileError;
 
-    if (data.session) {
-      await loadProfile(data.user.id);
-    }
+  console.log("Profile insert error:", profileError);
+
+  if (profileError) {
+    throw profileError;
   }
+
+  if (data.session) {
+    await loadProfile(data.user.id);
+  }
+}
 
   async function login({ email, password }) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -79,9 +96,11 @@ export function AuthProvider({ children }) {
       .from("profiles")
       .select("*")
       .eq("id", data.user.id)
-      .single();
-    if (profileError) throw profileError;
+      .maybeSingle();
+    console.log("Profile:", profile);
+console.log("Profile error:", profileError);
 
+if (profileError) throw profileError;
     return profile;
   }
 
