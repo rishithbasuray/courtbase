@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole } from "../utils/dashboardPath";
 import "./Auth.css";
 
 export default function Login() {
@@ -20,8 +21,8 @@ export default function Login() {
     setError("");
     setSubmitting(true);
     try {
-      await login(form);
-      navigate("/profile");
+      const profile = await login(form);
+      navigate(dashboardPathForRole(profile.role));
     } catch (err) {
       setError(err.message);
     } finally {

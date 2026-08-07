@@ -72,8 +72,17 @@ export function AuthProvider({ children }) {
   }
 
   async function login({ email, password }) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw error;
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", data.user.id)
+      .single();
+    if (profileError) throw profileError;
+
+    return profile;
   }
 
   async function logout() {

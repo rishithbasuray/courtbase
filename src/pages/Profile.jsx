@@ -199,9 +199,9 @@ export default function Profile() {
       </div>
 
       <div className="container">
-        {user.role === "Player" && (
+        {(user.role === "Player" || user.role === "Coach") && (
           <div className="stats-section" style={{ paddingBottom: 20 }}>
-            <h2>My Team</h2>
+            <h2>{user.role === "Coach" ? "My Team (Coaching)" : "My Team"}</h2>
 
             <div className="team-search-wrap">
               <input
@@ -290,6 +290,7 @@ export default function Profile() {
           </div>
         )}
 
+        {user.role === "Player" && (
         <div className="stats-section">
           <h2>My Highlights</h2>
 
@@ -343,7 +344,9 @@ export default function Profile() {
             </button>
           </form>
         </div>
+        )}
 
+        {user.role === "Player" && (
         <div className="stats-section">
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <h2>My Statistics</h2>
@@ -396,9 +399,10 @@ export default function Profile() {
             </div>
           )}
         </div>
+        )}
 
         <div style={{ display: "flex", gap: 12, marginBottom: 60 }}>
-          {user.role === "Player" && user.team_id && (
+          {(user.role === "Player" || user.role === "Coach") && user.team_id && (
             <button
               className="primary-btn"
               style={{ background: "transparent", color: "#b91c1c", border: "1px solid #b91c1c" }}

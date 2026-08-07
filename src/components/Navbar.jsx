@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole } from "../utils/dashboardPath";
 import "./Navbar.css";
+
+const dashboardLabels = {
+  Player: "My Profile",
+  Coach: "My Team",
+  "Tournament Official": "Dashboard",
+  Scout: "Watchlist",
+};
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -17,6 +25,9 @@ function Navbar() {
     closeMenu();
     navigate("/");
   }
+
+  const dashboardPath = user ? dashboardPathForRole(user.role) : "/profile";
+  const dashboardLabel = user ? dashboardLabels[user.role] || "My Profile" : "My Profile";
 
   return (
     <nav className="navbar">
@@ -43,7 +54,7 @@ function Navbar() {
 
           {user ? (
             <>
-              <Link to="/profile" className="navbar-link" onClick={closeMenu}>My Profile</Link>
+              <Link to={dashboardPath} className="navbar-link" onClick={closeMenu}>{dashboardLabel}</Link>
               <button className="navbar-link navbar-logout" onClick={handleLogout}>
                 Log Out
               </button>

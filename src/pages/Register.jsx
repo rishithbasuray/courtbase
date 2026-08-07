@@ -1,13 +1,19 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole } from "../utils/dashboardPath";
 import "./Auth.css";
 
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const presetRole = searchParams.get("role");
 
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "Player", position: "" });
+  const validRoles = ["Player", "Coach", "Tournament Official", "Scout"];
+  const initialRole = validRoles.includes(presetRole) ? presetRole : "Player";
+
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: initialRole, position: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -18,16 +24,14 @@ export default function Register() {
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
-
     if (!form.name || !form.email || !form.password) {
       setError("Please fill in all required fields.");
       return;
     }
-
     setSubmitting(true);
     try {
       await register(form);
-      navigate("/profile");
+      navigate(dashboardPathForRole(form.role));
     } catch (err) {
       setError(err.message);
     } finally {

@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { useAuth } from "../context/AuthContext";
 import "./Discovery.css";
 
 export default function PlayerProfile() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [player, setPlayer] = useState(null);
   const [teamName, setTeamName] = useState(null);
   const [highlights, setHighlights] = useState([]);
+  const [watchId, setWatchId] = useState(null);
+  const [watchLoading, setWatchLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -43,11 +47,37 @@ export default function PlayerProfile() {
         .order("created_at", { ascending: false });
       setHighlights(highlightData || []);
 
+      if (user && user.role === "Scout") {
+        const { data: watchData } = await supabase
+          .from("watchlist")
+          .select("id")
+          .eq("scout_id", user.id)
+          .eq("player_id", id)
+          .maybeSingle();
+        setWatchId(watchData?.id || null);
+      }
+
       setLoading(false);
     }
 
     fetchPlayer();
-  }, [id]);
+  }, [id, user]);
+
+  async function toggleWatchlist() {
+    setWatchLoading(true);
+    if (watchId) {
+      const { error } = await supabase.from("watchlist").delete().eq("id", watchId);
+      if (!error) setWatchId(null);
+    } else {
+      const { data, error } = await supabase
+        .from("watchlist")
+        .insert({ scout_id: user.id, player_id: id })
+        .select()
+        .single();
+      if (!error) setWatchId(data.id);
+    }
+    setWatchLoading(false);
+  }
 
   if (loading) {
     return (
@@ -82,6 +112,17 @@ export default function PlayerProfile() {
           <span className={`badge ${player.verified ? "badge-verified" : "badge-unverified"}`}>
             {player.verified ? "Verified" : "Unverified"}
           </span>
+
+          {user && user.role === "Scout" && (
+            <button
+              className="primary-btn"
+              style={watchId ? { background: "#6b7280" } : {}}
+              onClick={toggleWatchlist}
+              disabled={watchLoading}
+            >
+              {watchId ? "Remove from Watchlist" : "+ Add to Watchlist"}
+            </button>
+          )}
         </div>
       </div>
 

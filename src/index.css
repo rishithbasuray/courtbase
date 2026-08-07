@@ -17,7 +17,7 @@
   --shadow: rgba(0, 0, 0, 0.12) 0 10px 20px -5px, rgba(0, 0, 0, 0.08) 0 4px 8px -2px;
 
   --sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
