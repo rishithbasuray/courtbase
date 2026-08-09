@@ -55,6 +55,7 @@ function Navbar() {
           {user ? (
             <>
               <Link to={dashboardPath} className="navbar-link" onClick={closeMenu}>{dashboardLabel}</Link>
+              <Link to="/settings" className="navbar-link" onClick={closeMenu}>Settings</Link>
               <button className="navbar-link navbar-logout" onClick={handleLogout}>
                 Log Out
               </button>

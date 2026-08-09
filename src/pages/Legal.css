@@ -1,0 +1,24 @@
+.legal-page {
+  max-width: 750px;
+}
+
+.legal-notice {
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 30px;
+}
+
+.legal-content h2 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
+
+.legal-content p {
+  color: var(--text);
+  line-height: 1.8;
+  margin-bottom: 10px;
+}

@@ -1,4 +1,6 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { dashboardPathForRole } from "../utils/dashboardPath";
 import "./Home.css";
 
 const roles = [
@@ -10,6 +12,15 @@ const roles = [
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  function handleGetStarted() {
+    if (user) {
+      navigate(dashboardPathForRole(user.role));
+    } else {
+      navigate("/register");
+    }
+  }
 
   return (
     <>
@@ -22,8 +33,12 @@ export default function Home() {
             highlights, and connect with coaches, scouts, and tournaments.
           </p>
           <div className="hero-buttons">
-            <button className="primary-btn" onClick={() => navigate("/register")}>Get Started</button>
-            <button className="secondary-btn" onClick={() => navigate("/players")}>Explore Players</button>
+            <button className="primary-btn" onClick={handleGetStarted}>
+              {user ? "Go to My Dashboard" : "Get Started"}
+            </button>
+            <button className="secondary-btn" onClick={() => navigate("/players")}>
+              Explore Players
+            </button>
           </div>
         </div>
       </section>
@@ -37,12 +52,7 @@ export default function Home() {
 
           <div className="role-grid">
             {roles.map((r) => (
-              <div
-                className="role-card"
-                key={r.role}
-                onClick={() => navigate(`/register?role=${encodeURIComponent(r.role)}`)}
-                style={{ cursor: "pointer" }}
-              >
+              <div className="role-card" key={r.role}>
                 <div className="role-icon">{r.icon}</div>
                 <h3>{r.title}</h3>
                 <p>{r.text}</p>

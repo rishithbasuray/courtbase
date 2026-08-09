@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
       .from("profiles")
       .select("*")
       .eq("id", userId)
-      .maybeSingle();
+      .single();
 
     if (error) {
       console.error("Failed to load profile:", error);
@@ -50,23 +50,11 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
 
-async function register({ name, email, password, role, position }) {
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  async function register({ name, email, password, role, position }) {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
 
-  console.log("Signup:", data);
-
-  if (error) throw error;
-
-  if (!data.user) {
-    throw new Error("No user returned from Supabase.");
-  }
-
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .insert({
+    const { error: profileError } = await supabase.from("profiles").insert({
       id: data.user.id,
       name,
       email,
@@ -76,17 +64,12 @@ async function register({ name, email, password, role, position }) {
       stats: emptyStats,
       team_id: null,
     });
+    if (profileError) throw profileError;
 
-  console.log("Profile insert error:", profileError);
-
-  if (profileError) {
-    throw profileError;
+    if (data.session) {
+      await loadProfile(data.user.id);
+    }
   }
-
-  if (data.session) {
-    await loadProfile(data.user.id);
-  }
-}
 
   async function login({ email, password }) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -96,11 +79,9 @@ async function register({ name, email, password, role, position }) {
       .from("profiles")
       .select("*")
       .eq("id", data.user.id)
-      .maybeSingle();
-    console.log("Profile:", profile);
-console.log("Profile error:", profileError);
+      .single();
+    if (profileError) throw profileError;
 
-if (profileError) throw profileError;
     return profile;
   }
 
@@ -129,8 +110,30 @@ if (profileError) throw profileError;
     setUser({ ...user, team_id: teamId });
   }
 
+  async function changePassword(newPassword) {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+  }
+
+  async function changeEmail(newEmail) {
+    const { error } = await supabase.auth.updateUser({ email: newEmail });
+    if (error) throw error;
+  }
+
+  async function deleteAccount() {
+    if (!user) return;
+    // NOTE: this removes the profile row and signs the user out. Fully
+    // deleting the underlying Supabase Auth account requires a service-role
+    // key, which must never live in frontend code — that part needs a
+    // proper backend function later. For now this is a partial delete.
+    const { error } = await supabase.from("profiles").delete().eq("id", user.id);
+    if (error) throw error;
+    await supabase.auth.signOut();
+    setUser(null);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateStats, setTeam }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateStats, setTeam, changePassword, changeEmail, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

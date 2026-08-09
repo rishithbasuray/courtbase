@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/Home";
@@ -16,6 +17,7 @@ import Terms from "./pages/Terms";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import CoachDashboard from "./pages/CoachDashboard";
 import OfficialDashboard from "./pages/OfficialDashboard";
 import ScoutDashboard from "./pages/ScoutDashboard";
@@ -73,11 +75,19 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="/settings"
+              element={
+                <ProtectedRoute>
+                  <Settings />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
 
-        
+        <Footer />
       </div>
     </HashRouter>
   );
