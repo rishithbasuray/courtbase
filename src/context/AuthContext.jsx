@@ -60,6 +60,7 @@ export function AuthProvider({ children }) {
       email,
       role,
       position: position || "",
+      profile_photo_url: "",
       verified: false,
       stats: emptyStats,
       team_id: null,
@@ -100,6 +101,16 @@ export function AuthProvider({ children }) {
     setUser({ ...user, stats: merged });
   }
 
+  async function updateProfilePhoto(profilePhotoUrl) {
+    if (!user) return;
+    const { error } = await supabase
+      .from("profiles")
+      .update({ profile_photo_url: profilePhotoUrl })
+      .eq("id", user.id);
+    if (error) throw error;
+    setUser({ ...user, profile_photo_url: profilePhotoUrl });
+  }
+
   async function setTeam(teamId) {
     if (!user) return;
     const { error } = await supabase
@@ -132,8 +143,13 @@ export function AuthProvider({ children }) {
     setUser(null);
   }
 
+  async function refreshProfile() {
+    if (!user) return;
+    await loadProfile(user.id);
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, register, login, logout, updateStats, setTeam, changePassword, changeEmail, deleteAccount }}>
+    <AuthContext.Provider value={{ user, loading, register, login, logout, updateStats, updateProfilePhoto, setTeam, refreshProfile, changePassword, changeEmail, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

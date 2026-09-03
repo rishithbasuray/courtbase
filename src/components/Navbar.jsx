@@ -50,6 +50,7 @@ function Navbar() {
           <Link to="/" className="navbar-link" onClick={closeMenu}>Home</Link>
           <Link to="/players" className="navbar-link" onClick={closeMenu}>Players</Link>
           <Link to="/teams" className="navbar-link" onClick={closeMenu}>Teams</Link>
+          <Link to="/tournaments" className="navbar-link" onClick={closeMenu}>Tournaments</Link>
           <Link to="/about" className="navbar-link" onClick={closeMenu}>About</Link>
 
           {user ? (

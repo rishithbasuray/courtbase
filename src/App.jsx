@@ -22,11 +22,19 @@ import CoachDashboard from "./pages/CoachDashboard";
 import OfficialDashboard from "./pages/OfficialDashboard";
 import ScoutDashboard from "./pages/ScoutDashboard";
 import NotFound from "./pages/NotFound";
+import Tournaments from "./pages/Tournaments";
+import TournamentProfile from "./pages/TournamentProfile";
 
 function App() {
   return (
     <HashRouter>
-      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh",
+        }}
+      >
         <Navbar />
 
         <div style={{ flex: 1 }}>
@@ -43,6 +51,12 @@ function App() {
             <Route path="/terms" element={<Terms />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/tournaments" element={<Tournaments />} />
+            <Route
+              path="/tournaments/:id"
+              element={<TournamentProfile />}
+            />
+
             <Route
               path="/profile"
               element={
@@ -51,6 +65,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/coach-dashboard"
               element={
@@ -59,6 +74,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/official-dashboard"
               element={
@@ -67,6 +83,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/scout-dashboard"
               element={
@@ -75,6 +92,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route
               path="/settings"
               element={
@@ -83,6 +101,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

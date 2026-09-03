@@ -6,6 +6,7 @@ import "./Discovery.css";
 export default function Players() {
   const [players, setPlayers] = useState([]);
   const [teamMap, setTeamMap] = useState({});
+  const [statsMap, setStatsMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
@@ -28,8 +29,21 @@ export default function Players() {
       const map = {};
       (teamData || []).forEach((t) => (map[t.id] = t.name));
 
+      const ids = (playerData || []).map((p) => p.id);
+      const sMap = {};
+      if (ids.length > 0) {
+        const { data: verifiedRows } = await supabase
+          .from("player_verified_stats")
+          .select("*")
+          .in("player_id", ids);
+        (verifiedRows || []).forEach((v) => {
+          sMap[v.player_id] = v;
+        });
+      }
+
       setPlayers(playerData);
       setTeamMap(map);
+      setStatsMap(sMap);
       setLoading(false);
     }
 
@@ -79,24 +93,27 @@ export default function Players() {
       )}
 
       <div className="card-grid">
-        {filteredPlayers.map((player) => (
-          <Link to={`/players/${player.id}`} className="card" key={player.id}>
-            <span className={`badge ${player.verified ? "badge-verified" : "badge-unverified"}`}>
-              {player.verified ? "Verified" : "Unverified"}
-            </span>
+        {filteredPlayers.map((player) => {
+          const stats = statsMap[player.id];
+          return (
+            <Link to={`/players/${player.id}`} className="card" key={player.id}>
+              <span className={`badge ${player.verified ? "badge-verified" : "badge-unverified"}`}>
+                {player.verified ? "Verified" : "Unverified"}
+              </span>
 
-            <h3 style={{ marginTop: 10 }}>{player.name}</h3>
-            <p className="subtext">
-              {player.position || "Position not set"} · {teamMap[player.team_id] || "Unattached"}
-            </p>
+              <h3 style={{ marginTop: 10 }}>{player.name}</h3>
+              <p className="subtext">
+                {player.position || "Position not set"} · {teamMap[player.team_id] || "Unattached"}
+              </p>
 
-            <div className="card-stat-line">
-              <div><strong>{player.stats?.points ?? 0}</strong>Points</div>
-              <div><strong>{player.stats?.assists ?? 0}</strong>Assists</div>
-              <div><strong>{player.stats?.rebounds ?? 0}</strong>Rebounds</div>
-            </div>
-          </Link>
-        ))}
+              <div className="card-stat-line">
+                <div><strong>{stats?.points ?? 0}</strong>Points</div>
+                <div><strong>{stats?.assists ?? 0}</strong>Assists</div>
+                <div><strong>{stats?.rebounds ?? 0}</strong>Rebounds</div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

@@ -7,19 +7,35 @@ import "./Discovery.css";
 export default function ScoutDashboard() {
   const { user } = useAuth();
   const [watchlist, setWatchlist] = useState([]);
+  const [statsMap, setStatsMap] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchWatchlist();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchWatchlist() {
     const { data, error } = await supabase
       .from("watchlist")
-      .select("id, player_id, profiles:player_id (id, name, position, verified, stats)")
+      .select("id, player_id, profiles:player_id (id, name, position, verified)")
       .eq("scout_id", user.id);
 
-    if (!error) setWatchlist(data || []);
+    if (!error) {
+      const rows = data || [];
+      setWatchlist(rows);
+
+      const ids = rows.map((w) => w.player_id).filter(Boolean);
+      if (ids.length > 0) {
+        const { data: verifiedRows } = await supabase
+          .from("player_verified_stats")
+          .select("*")
+          .in("player_id", ids);
+        const map = {};
+        (verifiedRows || []).forEach((v) => (map[v.player_id] = v));
+        setStatsMap(map);
+      }
+    }
     setLoading(false);
   }
 
@@ -51,6 +67,7 @@ export default function ScoutDashboard() {
           {watchlist.map((w) => {
             const p = w.profiles;
             if (!p) return null;
+            const stats = statsMap[p.id];
             return (
               <div className="card" key={w.id}>
                 <span className={`badge ${p.verified ? "badge-verified" : "badge-unverified"}`}>
@@ -63,9 +80,9 @@ export default function ScoutDashboard() {
                 </h3>
                 <p className="subtext">{p.position || "Position not set"}</p>
                 <div className="card-stat-line">
-                  <div><strong>{p.stats?.points ?? 0}</strong>Points</div>
-                  <div><strong>{p.stats?.assists ?? 0}</strong>Assists</div>
-                  <div><strong>{p.stats?.rebounds ?? 0}</strong>Rebounds</div>
+                  <div><strong>{stats?.points ?? 0}</strong>Points</div>
+                  <div><strong>{stats?.assists ?? 0}</strong>Assists</div>
+                  <div><strong>{stats?.rebounds ?? 0}</strong>Rebounds</div>
                 </div>
                 <button
                   className="primary-btn"
