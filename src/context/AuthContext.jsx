@@ -3,13 +3,6 @@ import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
 
-const emptyStats = {
-  gamesPlayed: 0, minutes: 0, points: 0, assists: 0, rebounds: 0,
-  offRebounds: 0, defRebounds: 0, steals: 0, blocks: 0, turnovers: 0, fouls: 0,
-  fgm: 0, fga: 0, fgPct: 0, threeM: 0, threeA: 0, threePct: 0,
-  ftm: 0, fta: 0, ftPct: 0,
-};
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,21 +44,20 @@ export function AuthProvider({ children }) {
   }
 
   async function register({ name, email, password, role, position }) {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-
-    const { error: profileError } = await supabase.from("profiles").insert({
-      id: data.user.id,
-      name,
+    // The profiles row is created server-side by a trigger on auth.users
+    // (see the 20260910130000 migration), in the same transaction as the
+    // signup itself -- that's what makes this atomic instead of the old
+    // two-step signUp-then-insert, which could leave an orphaned auth user
+    // with no profile if anything failed in between. We just pass the
+    // profile fields along as signup metadata for the trigger to read back.
+    const { data, error } = await supabase.auth.signUp({
       email,
-      role,
-      position: position || "",
-      profile_photo_url: "",
-      verified: false,
-      stats: emptyStats,
-      team_id: null,
+      password,
+      options: {
+        data: { name, role, position: position || "" },
+      },
     });
-    if (profileError) throw profileError;
+    if (error) throw error;
 
     if (data.session) {
       await loadProfile(data.user.id);
