@@ -67,6 +67,7 @@ export default function Profile() {
   const { user, updateProfilePhoto, setTeam, refreshProfile, logout } = useAuth();
 
   const [teams, setTeams] = useState([]);
+  const [teamsError, setTeamsError] = useState("");
   const [teamSaving, setTeamSaving] = useState(false);
   const [showCreateTeam, setShowCreateTeam] = useState(false);
   const [newTeam, setNewTeam] = useState({ name: "", city: "", coach: "" });
@@ -80,6 +81,7 @@ export default function Profile() {
   const [outgoingRequest, setOutgoingRequest] = useState(null);
   const [incomingInvites, setIncomingInvites] = useState([]);
   const [teamRequestsLoading, setTeamRequestsLoading] = useState(true);
+  const [teamRequestsError, setTeamRequestsError] = useState("");
   const [teamRequestActionId, setTeamRequestActionId] = useState(null);
   const [joinSending, setJoinSending] = useState(false);
 
@@ -88,6 +90,7 @@ export default function Profile() {
 
   const [highlights, setHighlights] = useState([]);
   const [highlightsLoading, setHighlightsLoading] = useState(true);
+  const [highlightsLoadError, setHighlightsLoadError] = useState("");
   const [newHighlight, setNewHighlight] = useState({ title: "", url: "" });
   const [highlightError, setHighlightError] = useState("");
   const [addingHighlight, setAddingHighlight] = useState(false);
@@ -95,8 +98,10 @@ export default function Profile() {
 
   const [verifiedStats, setVerifiedStats] = useState(null);
   const [verifiedLoading, setVerifiedLoading] = useState(true);
+  const [verifiedError, setVerifiedError] = useState("");
   const [submissions, setSubmissions] = useState([]);
   const [submissionsLoading, setSubmissionsLoading] = useState(true);
+  const [submissionsError, setSubmissionsError] = useState("");
   const [gameForm, setGameForm] = useState(emptyGameForm());
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -124,7 +129,12 @@ export default function Profile() {
   }, [teams, user.team_id]);
 
   async function fetchTeams() {
-    const { data } = await supabase.from("teams").select("*").order("name");
+    const { data, error } = await supabase.from("teams").select("*").order("name");
+    if (error) {
+      setTeamsError(error.message);
+      return;
+    }
+    setTeamsError("");
     setTeams(data || []);
   }
 
@@ -135,17 +145,28 @@ export default function Profile() {
       .eq("player_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (!error) setHighlights(data || []);
+    if (error) {
+      setHighlightsLoadError(error.message);
+    } else {
+      setHighlightsLoadError("");
+      setHighlights(data || []);
+    }
     setHighlightsLoading(false);
   }
 
   async function fetchVerifiedStats() {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("player_verified_stats")
       .select("*")
       .eq("player_id", user.id)
       .maybeSingle();
-    setVerifiedStats(data || null);
+
+    if (error) {
+      setVerifiedError(error.message);
+    } else {
+      setVerifiedError("");
+      setVerifiedStats(data || null);
+    }
     setVerifiedLoading(false);
   }
 
@@ -156,7 +177,12 @@ export default function Profile() {
       .eq("player_id", user.id)
       .order("created_at", { ascending: false });
 
-    if (!error) setSubmissions(data || []);
+    if (error) {
+      setSubmissionsError(error.message);
+    } else {
+      setSubmissionsError("");
+      setSubmissions(data || []);
+    }
     setSubmissionsLoading(false);
   }
 
@@ -220,7 +246,10 @@ export default function Profile() {
       .eq("status", "pending")
       .order("created_at", { ascending: false });
 
-    if (!error) {
+    if (error) {
+      setTeamRequestsError(error.message);
+    } else {
+      setTeamRequestsError("");
       const rows = data || [];
       setOutgoingRequest(rows.find((r) => r.direction === "player_request") || null);
       setIncomingInvites(rows.filter((r) => r.direction === "coach_invite"));
@@ -552,8 +581,17 @@ export default function Profile() {
                   </p>
                 ) : teamRequestsLoading ? (
                   <p className="muted-note">Loading...</p>
+                ) : teamRequestsError ? (
+                  <div className="empty-panel" style={{ color: "#b91c1c" }}>
+                    Couldn't load your team requests: {teamRequestsError}
+                  </div>
                 ) : (
                   <>
+                    {teamsError && (
+                      <div className="auth-error" style={{ marginBottom: 12 }}>
+                        Couldn't load the team list: {teamsError}
+                      </div>
+                    )}
                     {incomingInvites.length > 0 && (
                       <>
                         <h3 className="stat-group-label" style={{ marginTop: 0 }}>Invitations</h3>
@@ -662,6 +700,10 @@ export default function Profile() {
 
                 {highlightsLoading ? (
                   <p className="muted-note">Loading highlights...</p>
+                ) : highlightsLoadError ? (
+                  <div className="empty-panel" style={{ color: "#b91c1c" }}>
+                    Couldn't load highlights: {highlightsLoadError}
+                  </div>
                 ) : highlights.length === 0 ? (
                   <div className="empty-panel">No highlights added yet.</div>
                 ) : (
@@ -730,6 +772,10 @@ export default function Profile() {
 
                 {verifiedLoading ? (
                   <p className="muted-note">Loading...</p>
+                ) : verifiedError ? (
+                  <div className="empty-panel" style={{ color: "#b91c1c" }}>
+                    Couldn't load your verified stats: {verifiedError}
+                  </div>
                 ) : !v || v.games_played === 0 ? (
                   <div className="empty-panel">
                     No officially verified games yet. Once a game you submit
@@ -857,6 +903,10 @@ export default function Profile() {
 
                 {submissionsLoading ? (
                   <p className="muted-note">Loading...</p>
+                ) : submissionsError ? (
+                  <div className="empty-panel" style={{ color: "#b91c1c" }}>
+                    Couldn't load your submissions: {submissionsError}
+                  </div>
                 ) : submissions.length === 0 ? (
                   <div className="empty-panel">You haven't submitted any games yet.</div>
                 ) : (

@@ -8,6 +8,7 @@ export default function OfficialDashboard() {
   const { user } = useAuth();
   const [pending, setPending] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [actioningId, setActioningId] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -17,13 +18,19 @@ export default function OfficialDashboard() {
   }, []);
 
   async function fetchPending() {
-    const { data, error } = await supabase
+    const { data, error: fetchError } = await supabase
       .from("game_stats")
       .select("*, profiles:player_id (name), teams:team_id (name)")
       .eq("status", "coach_verified")
       .order("coach_verified_at", { ascending: true });
 
-    if (!error) setPending(data || []);
+    if (fetchError) {
+      setError(fetchError.message);
+      setLoading(false);
+      return;
+    }
+    setError("");
+    setPending(data || []);
     setLoading(false);
   }
 
@@ -82,6 +89,10 @@ export default function OfficialDashboard() {
 
         {loading ? (
           <p className="muted-note">Loading...</p>
+        ) : error ? (
+          <div className="empty-panel" style={{ color: "#b91c1c" }}>
+            Couldn't load submissions waiting on verification: {error}
+          </div>
         ) : pending.length === 0 ? (
           <div className="empty-panel">
             No coach-verified submissions waiting on final sign-off right now.

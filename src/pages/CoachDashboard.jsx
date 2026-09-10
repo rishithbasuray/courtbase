@@ -10,9 +10,11 @@ export default function CoachDashboard() {
   const [roster, setRoster] = useState([]);
   const [statsMap, setStatsMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
 
   const [pending, setPending] = useState([]);
   const [pendingLoading, setPendingLoading] = useState(true);
+  const [pendingError, setPendingError] = useState("");
   const [actioningId, setActioningId] = useState(null);
   const [rejectTarget, setRejectTarget] = useState(null);
   const [rejectReason, setRejectReason] = useState("");
@@ -20,6 +22,7 @@ export default function CoachDashboard() {
   const [joinRequests, setJoinRequests] = useState([]);
   const [invitesSent, setInvitesSent] = useState([]);
   const [requestsLoading, setRequestsLoading] = useState(true);
+  const [requestsError, setRequestsError] = useState("");
   const [requestActioningId, setRequestActioningId] = useState(null);
 
   const [inviteSearch, setInviteSearch] = useState("");
@@ -40,17 +43,28 @@ export default function CoachDashboard() {
         return;
       }
 
-      const { data: teamData } = await supabase
+      setLoadError("");
+      const { data: teamData, error: teamError } = await supabase
         .from("teams")
         .select("*")
         .eq("id", user.team_id)
         .single();
 
-      const { data: rosterData } = await supabase
+      if (teamError) {
+        setLoadError(teamError.message);
+        setLoading(false);
+        setPendingLoading(false);
+        setRequestsLoading(false);
+        return;
+      }
+
+      const { data: rosterData, error: rosterError } = await supabase
         .from("profiles")
         .select("*")
         .eq("team_id", user.team_id)
         .eq("role", "Player");
+
+      if (rosterError) setLoadError(rosterError.message);
 
       setTeam(teamData);
       setRoster(rosterData || []);
@@ -82,7 +96,12 @@ export default function CoachDashboard() {
       .eq("status", "pending")
       .order("created_at", { ascending: true });
 
-    if (!error) setPending(data || []);
+    if (error) {
+      setPendingError(error.message);
+    } else {
+      setPendingError("");
+      setPending(data || []);
+    }
     setPendingLoading(false);
   }
 
@@ -94,7 +113,10 @@ export default function CoachDashboard() {
       .eq("status", "pending")
       .order("created_at", { ascending: true });
 
-    if (!error) {
+    if (error) {
+      setRequestsError(error.message);
+    } else {
+      setRequestsError("");
       const rows = data || [];
       setJoinRequests(rows.filter((r) => r.direction === "player_request"));
       setInvitesSent(rows.filter((r) => r.direction === "coach_invite"));
@@ -195,7 +217,11 @@ export default function CoachDashboard() {
       .limit(8);
     setInviteSearching(false);
 
-    if (!error) setInviteResults(data || []);
+    if (error) {
+      setInviteError(error.message);
+      return;
+    }
+    setInviteResults(data || []);
   }
 
   async function sendInvite(playerId) {
@@ -244,6 +270,10 @@ export default function CoachDashboard() {
 
       {loading ? (
         <p style={{ textAlign: "center", color: "var(--text)" }}>Loading...</p>
+      ) : loadError ? (
+        <p style={{ textAlign: "center", color: "#b91c1c" }}>
+          Couldn't load your team: {loadError}
+        </p>
       ) : !user.team_id ? (
         <div style={{ textAlign: "center", padding: "20px 0 60px" }}>
           <p style={{ color: "var(--text)", marginBottom: 16 }}>
@@ -265,6 +295,10 @@ export default function CoachDashboard() {
 
             {pendingLoading ? (
               <p className="muted-note">Loading...</p>
+            ) : pendingError ? (
+              <div className="empty-panel" style={{ color: "#b91c1c" }}>
+                Couldn't load pending verifications: {pendingError}
+              </div>
             ) : pending.length === 0 ? (
               <div className="empty-panel">
                 No stat submissions waiting on you right now.
@@ -316,6 +350,10 @@ export default function CoachDashboard() {
 
             {requestsLoading ? (
               <p className="muted-note">Loading...</p>
+            ) : requestsError ? (
+              <div className="empty-panel" style={{ color: "#b91c1c" }}>
+                Couldn't load join requests: {requestsError}
+              </div>
             ) : joinRequests.length === 0 ? (
               <div className="empty-panel">No players waiting to join right now.</div>
             ) : (

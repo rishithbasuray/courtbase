@@ -9,6 +9,7 @@ export default function ScoutDashboard() {
   const [watchlist, setWatchlist] = useState([]);
   const [statsMap, setStatsMap] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchWatchlist();
@@ -16,32 +17,41 @@ export default function ScoutDashboard() {
   }, []);
 
   async function fetchWatchlist() {
-    const { data, error } = await supabase
+    const { data, error: fetchError } = await supabase
       .from("watchlist")
       .select("id, player_id, profiles:player_id (id, name, position, verified)")
       .eq("scout_id", user.id);
 
-    if (!error) {
-      const rows = data || [];
-      setWatchlist(rows);
+    if (fetchError) {
+      setError(fetchError.message);
+      setLoading(false);
+      return;
+    }
 
-      const ids = rows.map((w) => w.player_id).filter(Boolean);
-      if (ids.length > 0) {
-        const { data: verifiedRows } = await supabase
-          .from("player_verified_stats")
-          .select("*")
-          .in("player_id", ids);
-        const map = {};
-        (verifiedRows || []).forEach((v) => (map[v.player_id] = v));
-        setStatsMap(map);
-      }
+    setError("");
+    const rows = data || [];
+    setWatchlist(rows);
+
+    const ids = rows.map((w) => w.player_id).filter(Boolean);
+    if (ids.length > 0) {
+      const { data: verifiedRows } = await supabase
+        .from("player_verified_stats")
+        .select("*")
+        .in("player_id", ids);
+      const map = {};
+      (verifiedRows || []).forEach((v) => (map[v.player_id] = v));
+      setStatsMap(map);
     }
     setLoading(false);
   }
 
   async function handleRemove(watchId) {
-    const { error } = await supabase.from("watchlist").delete().eq("id", watchId);
-    if (!error) setWatchlist(watchlist.filter((w) => w.id !== watchId));
+    const { error: removeError } = await supabase.from("watchlist").delete().eq("id", watchId);
+    if (removeError) {
+      alert(removeError.message);
+      return;
+    }
+    setWatchlist(watchlist.filter((w) => w.id !== watchId));
   }
 
   return (
@@ -53,6 +63,10 @@ export default function ScoutDashboard() {
 
       {loading ? (
         <p style={{ textAlign: "center", color: "var(--text)" }}>Loading...</p>
+      ) : error ? (
+        <p style={{ textAlign: "center", color: "#b91c1c" }}>
+          Couldn't load your watchlist: {error}
+        </p>
       ) : watchlist.length === 0 ? (
         <div style={{ textAlign: "center", padding: "20px 0 60px" }}>
           <p style={{ color: "var(--text)", marginBottom: 16 }}>
