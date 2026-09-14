@@ -1,0 +1,34 @@
+-- CourtBase: close two pre-existing INSERT-policy loopholes on
+-- tournaments/matches that the 20260909120000 lockdown migration didn't
+-- know about (it could only add RLS to what it created -- these two
+-- policies already existed on the tables from before that migration ran).
+--
+-- "Officials can create tournaments" (INSERT on tournaments) only checked
+-- `auth.uid() = created_by` -- despite its name, it never verified the
+-- caller's role. Any authenticated user (Player, Coach, Scout) could
+-- insert directly into tournaments and skip the create_tournament() RPC
+-- entirely, which is the only place that actually checks
+-- role = 'Tournament Official'.
+--
+-- "Tournament creators can add matches" (INSERT on matches) correctly
+-- checked that the caller owns the tournament, but never checked that
+-- the two teams being matched are registered participants -- unlike the
+-- add_tournament_match() RPC, which requires both teams to already be in
+-- tournament_teams for that tournament.
+--
+-- The app already calls create_tournament() and add_tournament_match()
+-- exclusively (see Tournaments.jsx / TournamentProfile.jsx) -- neither
+-- does a raw .insert() against these tables anymore. Both RPCs are
+-- `security definer`, so they run with the function owner's privileges
+-- and bypass RLS entirely -- dropping these two policies has zero effect
+-- on the app's own behavior, it just removes a way to skip the RPCs'
+-- checks by calling the table directly.
+--
+-- Everything else on these two tables was reviewed and left alone: the
+-- UPDATE/DELETE policies are properly scoped to the tournament's actual
+-- creator (same authority the RPCs already grant them), and the
+-- duplicate public-read SELECT policies are harmless redundancy, not a
+-- security issue.
+
+drop policy if exists "Officials can create tournaments" on public.tournaments;
+drop policy if exists "Tournament creators can add matches" on public.matches;
