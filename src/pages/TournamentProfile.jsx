@@ -59,9 +59,9 @@ export default function TournamentProfile() {
   async function handleRegisterTeam() {
     if (!user?.team_id) return;
     setRegistering(true);
-    const { error } = await supabase
-      .from("tournament_teams")
-      .insert({ tournament_id: id, team_id: user.team_id });
+    const { error } = await supabase.rpc("register_team_for_tournament", {
+      p_tournament_id: id,
+    });
     setRegistering(false);
     if (error) {
       alert(error.message);
@@ -84,12 +84,11 @@ export default function TournamentProfile() {
     }
 
     setSavingMatch(true);
-    const { error } = await supabase.from("matches").insert({
-      tournament_id: id,
-      team_a_id: matchForm.team_a_id,
-      team_b_id: matchForm.team_b_id,
-      match_date: matchForm.match_date || null,
-      status: "scheduled",
+    const { error } = await supabase.rpc("add_tournament_match", {
+      p_tournament_id: id,
+      p_team_a_id: matchForm.team_a_id,
+      p_team_b_id: matchForm.team_b_id,
+      p_match_date: matchForm.match_date || null,
     });
     setSavingMatch(false);
 
@@ -115,10 +114,11 @@ export default function TournamentProfile() {
     const team_a_score = edits.team_a_score !== undefined ? Number(edits.team_a_score) : match.team_a_score;
     const team_b_score = edits.team_b_score !== undefined ? Number(edits.team_b_score) : match.team_b_score;
 
-    const { error } = await supabase
-      .from("matches")
-      .update({ team_a_score, team_b_score, status: "completed" })
-      .eq("id", match.id);
+    const { error } = await supabase.rpc("record_match_score", {
+      p_match_id: match.id,
+      p_team_a_score: team_a_score,
+      p_team_b_score: team_b_score,
+    });
 
     if (error) {
       alert(error.message);
