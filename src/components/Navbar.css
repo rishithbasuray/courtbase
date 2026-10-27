@@ -1,5 +1,6 @@
 .navbar {
-  background: var(--bg-dark);
+  background: var(--nav-bg);
+  border-top: 2px solid var(--accent);
 }
 
 .navbar-inner {
@@ -12,12 +13,23 @@
 
 .navbar-logo {
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-mark {
+  font-size: 1.35rem;
+  line-height: 1;
+  flex-shrink: 0;
 }
 
 .navbar-logo h2 {
   color: var(--text-on-dark);
   margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  font-family: var(--heading);
+  font-weight: 700;
 }
 
 .navbar-links {
@@ -27,7 +39,7 @@
 }
 
 .navbar-link {
-  color: var(--text-on-dark);
+  color: rgba(255, 255, 255, 0.72);
   text-decoration: none;
   font-weight: 600;
   background: none;
@@ -35,18 +47,57 @@
   font-size: 1rem;
   cursor: pointer;
   font-family: inherit;
+  position: relative;
+  padding-bottom: 3px;
+  transition: color 0.18s ease;
+}
+
+.navbar-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.navbar-link:hover {
+  color: var(--text-on-dark);
+}
+
+.navbar-link:hover::after {
+  transform: scaleX(1);
 }
 
 .navbar-register {
+  color: var(--text-on-dark);
   background: var(--accent);
   padding: 10px 20px;
   border-radius: 8px;
 }
 
+.navbar-register:hover {
+  color: var(--text-on-dark);
+  background: var(--accent-hover);
+}
+
+.navbar-register::after {
+  display: none;
+}
+
 .navbar-logout {
-  border: 1px solid var(--text-on-dark);
+  color: var(--text-on-dark);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 8px 18px;
   border-radius: 8px;
+}
+
+.navbar-logout::after {
+  display: none;
 }
 
 .navbar-toggle {
@@ -85,7 +136,7 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--bg-dark);
+    background: var(--nav-bg);
     flex-direction: column;
     align-items: stretch;
     padding: 10px 20px 20px;

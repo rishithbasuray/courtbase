@@ -122,7 +122,7 @@
 }
 
 .profile-header .meta {
-  color: #d9d3c7;
+  color: var(--text-on-dark-muted);
   font-size: 1.05rem;
 }
 
@@ -149,7 +149,7 @@
   height: 112px;
   border-radius: 8px;
   overflow: hidden;
-  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  background: linear-gradient(135deg, #ffe9d1, var(--accent-2));
   border: 2px solid rgba(255, 255, 255, 0.24);
   box-shadow: rgba(0, 0, 0, 0.2) 0 18px 40px -18px;
   display: flex;
@@ -209,7 +209,7 @@
 }
 
 .player-profile-tags span:not(.badge) {
-  color: #f5f5f0;
+  color: var(--text-on-dark);
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 8px;
   padding: 5px 10px;
@@ -219,13 +219,13 @@
 
 .badge-neutral {
   background: rgba(245, 245, 240, 0.14);
-  color: #f5f5f0;
+  color: var(--text-on-dark);
 }
 
 .player-profile-shell {
   background:
-    linear-gradient(180deg, rgba(255, 248, 240, 0) 0, var(--bg) 180px),
-    #fffdf9;
+    linear-gradient(180deg, rgba(11, 28, 58, 0) 0, var(--bg) 180px),
+    var(--bg);
 }
 
 .player-overview-grid {
@@ -299,7 +299,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  background: #f0ece2;
+  background: var(--border);
   border: 1px solid var(--border);
   border-radius: 7px;
   padding: 3px;
@@ -320,7 +320,7 @@
 }
 
 .stats-toggle button.active {
-  background: #1f2933;
+  background: var(--bg-dark);
   color: white;
 }
 
@@ -414,7 +414,7 @@
   width: 72px;
   height: 72px;
   border-radius: 8px;
-  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  background: linear-gradient(135deg, #ffe9d1, var(--accent-2));
   color: var(--accent);
   display: flex;
   align-items: center;
@@ -487,7 +487,7 @@
 }
 
 .player-record-copy h1 span {
-  color: #f7efe6;
+  color: var(--text-on-dark-muted);
   font-weight: 700;
 }
 
@@ -497,7 +497,7 @@
 }
 
 .player-record-copy .meta {
-  color: #e8ded0;
+  color: var(--text-on-dark-muted);
   font-size: clamp(1rem, 1.4vw, 1.18rem);
   font-weight: 700;
 }
@@ -514,7 +514,7 @@
   justify-self: end;
   border-radius: 10px;
   background:
-    radial-gradient(circle at 50% 28%, #fff7ed 0, #fed7aa 38%, #ea580c 100%);
+    radial-gradient(circle at 50% 28%, #ffe9d1 0, var(--accent-2) 38%, var(--accent) 100%);
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: rgba(0, 0, 0, 0.35) 0 22px 50px -18px;
   display: flex;
@@ -634,8 +634,8 @@
 }
 
 .player-stats-table th {
-  background: #1f2933;
-  color: #cbd2d9;
+  background: var(--bg-dark);
+  color: var(--text-on-dark-muted);
   font-size: 0.72rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -677,7 +677,7 @@
 }
 
 .player-stats-table tbody tr:nth-child(even) {
-  background: #faf7f1;
+  background: rgba(11, 28, 58, 0.035);
 }
 
 /* ---------- STATS TABLE ---------- */
@@ -785,7 +785,7 @@
   width: 100%;
   height: 8px;
   border-radius: 999px;
-  background: #f0ece2;
+  background: var(--border);
   overflow: hidden;
 }
 
@@ -1044,7 +1044,7 @@
   height: 108px;
   border-radius: 10px;
   overflow: hidden;
-  background: linear-gradient(135deg, #fff7ed, #fed7aa);
+  background: linear-gradient(135deg, #ffe9d1, var(--accent-2));
   border: 1px solid rgba(255, 255, 255, 0.2);
   box-shadow: rgba(0, 0, 0, 0.35) 0 18px 40px -18px;
   display: flex;
@@ -1101,7 +1101,7 @@
 }
 
 .profile-record-copy .meta {
-  color: #e8ded0;
+  color: var(--text-on-dark-muted);
   font-size: 1.02rem;
   font-weight: 700;
 }
@@ -1126,8 +1126,8 @@
 
 .profile-dashboard-shell {
   background:
-    linear-gradient(180deg, rgba(255, 248, 240, 0) 0, var(--bg) 120px),
-    #fffdf9;
+    linear-gradient(180deg, rgba(11, 28, 58, 0) 0, var(--bg) 120px),
+    var(--bg);
 }
 
 .profile-dashboard-grid {
@@ -1473,6 +1473,219 @@
     flex: 1;
   }
 }
+/* ---------- TEAM PROFILE ---------- */
+
+.team-record-hero {
+  background:
+    linear-gradient(90deg, rgba(15, 15, 15, 0.98), rgba(25, 25, 25, 0.94)),
+    var(--bg-dark);
+  color: var(--text-on-dark);
+  padding: 44px 0;
+  overflow: hidden;
+}
+
+.team-record-hero .container {
+  width: min(84vw, 1180px);
+  max-width: 1180px;
+}
+
+.team-record-layout {
+  display: grid;
+  grid-template-columns: clamp(88px, 10vw, 130px) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(22px, 4vw, 40px);
+}
+
+.team-record-mark {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: radial-gradient(circle at 40% 30%, #ffe9d1 0, var(--accent-2) 45%, var(--accent) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: rgba(0, 0, 0, 0.35) 0 22px 50px -18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-record-mark span {
+  color: #151515;
+  font-family: var(--heading);
+  font-size: clamp(1.5rem, 2.8vw, 2.1rem);
+  font-weight: 900;
+}
+
+.team-record-copy h1 {
+  color: white;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  line-height: 1.05;
+  margin: 0 0 8px;
+  text-transform: uppercase;
+}
+
+.team-record-copy .meta {
+  color: var(--text-on-dark-muted);
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+.roster-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.roster-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.roster-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+  border-color: var(--accent);
+}
+
+.roster-card-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  flex: 0 0 auto;
+  background: linear-gradient(135deg, #ffe9d1, var(--accent-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--heading);
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 0.9rem;
+}
+
+.roster-card-name {
+  font-weight: 800;
+  color: var(--text-h);
+  display: block;
+}
+
+.roster-card-position {
+  color: var(--text);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .team-record-layout {
+    grid-template-columns: 76px minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .team-record-copy h1 {
+    font-size: 1.7rem;
+  }
+}
+
+/* ---------- TOURNAMENT PROFILE ---------- */
+
+.tournament-record-hero {
+  background:
+    linear-gradient(90deg, rgba(15, 15, 15, 0.98), rgba(25, 25, 25, 0.94)),
+    var(--bg-dark);
+  color: var(--text-on-dark);
+  padding: 44px 0;
+}
+
+.tournament-record-hero .container {
+  width: min(84vw, 1180px);
+  max-width: 1180px;
+}
+
+.tournament-record-copy h1 {
+  color: white;
+  font-size: clamp(2rem, 3.6vw, 3rem);
+  line-height: 1.05;
+  margin: 6px 0 8px;
+  text-transform: uppercase;
+}
+
+.tournament-record-copy .meta {
+  color: var(--text-on-dark-muted);
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+.tournament-record-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 26px;
+  background: #14181c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.28) 0 18px 40px -26px;
+}
+
+.matchup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.matchup-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.matchup-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.matchup-team {
+  flex: 1;
+  font-weight: 800;
+  color: var(--text-h);
+  font-size: 1.02rem;
+}
+
+.matchup-team.right {
+  text-align: right;
+}
+
+.matchup-score {
+  font-family: var(--mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 70px;
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.matchup-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
 /* ---------- 404 ---------- */
 
 .not-found {

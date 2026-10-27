@@ -15,7 +15,7 @@ export default function Players() {
     async function fetchData() {
       const { data: playerData, error: playerError } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, name, position, team_id, verified, profile_photo_url, created_at")
         .eq("role", "Player")
         .order("created_at", { ascending: false });
 

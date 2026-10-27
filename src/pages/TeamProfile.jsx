@@ -26,7 +26,7 @@ export default function TeamProfile() {
 
       const { data: rosterData } = await supabase
         .from("profiles")
-        .select("*")
+        .select("id, name, position")
         .eq("team_id", id);
 
       setTeam(teamData);
@@ -56,35 +56,62 @@ export default function TeamProfile() {
     );
   }
 
+  const teamInitials = (team.name || "")
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const playerInitials = (name) =>
+    (name || "")
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
   return (
     <>
-      <div className="profile-header">
-        <div className="container">
-          <div>
+      <div className="team-record-hero">
+        <div className="container team-record-layout">
+          <div className="team-record-mark" aria-hidden="true">
+            <span>{teamInitials || "CB"}</span>
+          </div>
+          <div className="team-record-copy">
+            <div className="profile-kicker">CourtBase Team</div>
             <h1>{team.name}</h1>
             <p className="meta">{team.city || "City not set"} · Coach: {team.coach || "Not set"}</p>
           </div>
         </div>
       </div>
 
-      <div className="container">
-        <div className="stats-section">
-          <h2>Roster</h2>
-
-          {roster.length === 0 ? (
-            <p style={{ color: "var(--text)" }}>No players on this roster yet.</p>
-          ) : (
-            <div className="roster-list">
-              {roster.map((player) => (
-                <Link to={`/players/${player.id}`} key={player.id}>
-                  <span>{player.name}</span>
-                  <span style={{ color: "var(--text)", fontWeight: 400 }}>
-                    {player.position || "Position not set"}
-                  </span>
-                </Link>
-              ))}
+      <div className="player-profile-shell">
+        <div className="container">
+          <section className="stats-section">
+            <div className="section-heading-row">
+              <div>
+                <p className="section-eyebrow">Roster</p>
+                <h2>Team Roster ({roster.length})</h2>
+              </div>
             </div>
-          )}
+
+            {roster.length === 0 ? (
+              <div className="empty-panel">No players on this roster yet.</div>
+            ) : (
+              <div className="roster-grid">
+                {roster.map((player) => (
+                  <Link to={`/players/${player.id}`} key={player.id} className="roster-card">
+                    <span className="roster-card-avatar">{playerInitials(player.name)}</span>
+                    <span>
+                      <span className="roster-card-name">{player.name}</span>
+                      <span className="roster-card-position">{player.position || "Position not set"}</span>
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </>

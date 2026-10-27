@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../utils/dashboardPath";
+import AuthShell from "../components/AuthShell";
 import "./Auth.css";
 
 export default function Register() {
@@ -40,7 +41,15 @@ export default function Register() {
   }
 
   return (
-    <div className="auth-page">
+    <AuthShell
+      eyebrow="Join CourtBase"
+      title="Build a record that follows you."
+      bullets={[
+        "A free, verified athlete profile",
+        "Log games, highlights, and career totals",
+        "Get discovered by scouts",
+      ]}
+    >
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>Create Account</h1>
         <p className="auth-subtext">Join CourtBase and start building your basketball profile.</p>
@@ -79,6 +88,6 @@ export default function Register() {
           Already have an account? <Link to="/login">Log in</Link>
         </p>
       </form>
-    </div>
+    </AuthShell>
   );
 }

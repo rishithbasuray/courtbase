@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { dashboardPathForRole } from "../utils/dashboardPath";
+import AuthShell from "../components/AuthShell";
 import "./Auth.css";
 
 export default function Login() {
@@ -31,7 +32,15 @@ export default function Login() {
   }
 
   return (
-    <div className="auth-page">
+    <AuthShell
+      eyebrow="CourtBase"
+      title="Every verified stat, every game, in one place."
+      bullets={[
+        "Coach & official sign-off on every stat line",
+        "Track your season from tip-off to tournament",
+        "Built for players, coaches, officials & scouts",
+      ]}
+    >
       <form className="auth-card" onSubmit={handleSubmit}>
         <h1>Login</h1>
         <p className="auth-subtext">Sign in to CourtBase.</p>
@@ -44,7 +53,11 @@ export default function Login() {
         <label>Password</label>
         <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" />
 
-        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }} disabled={submitting}>
+        <p style={{ textAlign: "right", margin: "10px 0 0" }}>
+          <Link to="/forgot-password" style={{ fontSize: "0.85rem" }}>Forgot password?</Link>
+        </p>
+
+        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 14 }} disabled={submitting}>
           {submitting ? "Logging In..." : "Log In"}
         </button>
 
@@ -52,6 +65,6 @@ export default function Login() {
           Don't have an account? <Link to="/register">Register</Link>
         </p>
       </form>
-    </div>
+    </AuthShell>
   );
 }

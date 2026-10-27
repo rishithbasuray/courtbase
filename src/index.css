@@ -1,24 +1,30 @@
 :root {
-  /* Basketball palette: court orange + charcoal + warm cream */
-  --text: #4b5563;           /* body text on light backgrounds */
-  --text-h: #1a1a1a;         /* headings on light backgrounds */
-  --text-on-dark: #F5F5F0;   /* text used on dark/charcoal sections */
-  --bg: #FFF8F0;             /* warm cream page background */
-  --bg-dark: #1B1B1B;        /* charcoal, used for hero/dark sections */
-  --border: #e5ded2;
-  --code-bg: #f4f3ec;
+  /* CourtBase palette: navy court + basketball orange + gold */
+  --text: #4a5058;           /* body text on light backgrounds */
+  --text-h: #0b1c3a;         /* headings on light backgrounds */
+  --text-on-dark: #f2f5fa;   /* text used on dark/navy sections */
+  --text-on-dark-muted: #b7c1d8; /* secondary text on dark/navy sections */
+  --bg: #f5f1e6;             /* paper page background -- warmed toward cream */
+  --bg-dark: #0b1c3a;        /* navy, used for hero/dark sections */
+  --bg-dark-2: #132a52;      /* lighter navy, for hover/panel-on-dark states */
+  --nav-bg: #15171b;         /* charcoal-black, navbar only -- deliberately not navy */
+  --border: #e2dccb;
+  --code-bg: #eeeadc;
 
-  --accent: #EA580C;         /* basketball orange */
-  --accent-hover: #C2410C;   /* darker orange for hover states */
-  --accent-bg: rgba(234, 88, 12, 0.1);
-  --accent-border: rgba(234, 88, 12, 0.5);
+  --accent: #e0561f;         /* basketball orange -- deepened, less traffic-cone */
+  --accent-hover: #c14a1a;   /* darker orange for hover states */
+  --accent-bg: rgba(224, 86, 31, 0.08);
+  --accent-border: rgba(224, 86, 31, 0.4);
 
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow: rgba(0, 0, 0, 0.12) 0 10px 20px -5px, rgba(0, 0, 0, 0.08) 0 4px 8px -2px;
+  --accent-2: #ffc738;       /* gold, secondary accent */
+  --accent-2-bg: rgba(255, 199, 56, 0.15);
 
-  --sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --social-bg: rgba(238, 234, 220, 0.6);
+  --shadow: rgba(11, 28, 58, 0.12) 0 10px 20px -5px, rgba(11, 28, 58, 0.08) 0 4px 8px -2px;
+
+  --sans: 'IBM Plex Sans', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: 'Sora', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.1px;
@@ -52,16 +58,16 @@ body {
 
 h1, h2, h3 {
   font-family: var(--heading);
-  font-weight: 800;
+  font-weight: 700;
   color: var(--text-h);
-  letter-spacing: -0.5px;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 h1 {
   font-size: 56px;
   line-height: 1.05;
   margin: 32px 0;
-  text-transform: uppercase;
   @media (max-width: 1024px) {
     font-size: 34px;
     margin: 20px 0;
@@ -96,7 +102,7 @@ button, .btn {
   background: var(--accent);
   color: white;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 
   &:hover {
     background: var(--accent-hover);

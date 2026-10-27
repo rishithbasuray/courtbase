@@ -36,13 +36,12 @@ export default function Tournaments() {
     }
 
     setCreating(true);
-    const { error } = await supabase.from("tournaments").insert({
-      name: form.name,
-      description: form.description,
-      location: form.location,
-      start_date: form.start_date || null,
-      end_date: form.end_date || null,
-      created_by: user.id,
+    const { error } = await supabase.rpc("create_tournament", {
+      p_name: form.name,
+      p_description: form.description || null,
+      p_location: form.location || null,
+      p_start_date: form.start_date || null,
+      p_end_date: form.end_date || null,
     });
     setCreating(false);
 

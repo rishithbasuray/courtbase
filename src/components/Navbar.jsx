@@ -33,7 +33,8 @@ function Navbar() {
     <nav className="navbar">
       <div className="navbar-inner">
         <Link to="/" className="navbar-logo" onClick={closeMenu}>
-          <h2>🏀 CourtBase</h2>
+          <span className="navbar-mark" aria-hidden="true">🏀</span>
+          <h2>CourtBase</h2>
         </Link>
 
         <button
