@@ -44,7 +44,11 @@ export default function Login() {
         <label>Password</label>
         <input name="password" type="password" value={form.password} onChange={handleChange} placeholder="••••••••" />
 
-        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 10 }} disabled={submitting}>
+        <p style={{ textAlign: "right", margin: "10px 0 0" }}>
+          <Link to="/forgot-password" style={{ fontSize: "0.85rem" }}>Forgot password?</Link>
+        </p>
+
+        <button type="submit" className="primary-btn" style={{ width: "100%", marginTop: 14 }} disabled={submitting}>
           {submitting ? "Logging In..." : "Log In"}
         </button>
 

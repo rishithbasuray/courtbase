@@ -3,6 +3,7 @@
   --text: #4b5563;           /* body text on light backgrounds */
   --text-h: #1a1a1a;         /* headings on light backgrounds */
   --text-on-dark: #F5F5F0;   /* text used on dark/charcoal sections */
+  --text-on-dark-muted: #b7c1d8; /* secondary text on dark sections */
   --bg: #FFF8F0;             /* warm cream page background */
   --bg-dark: #1B1B1B;        /* charcoal, used for hero/dark sections */
   --border: #e5ded2;
@@ -12,6 +13,8 @@
   --accent-hover: #C2410C;   /* darker orange for hover states */
   --accent-bg: rgba(234, 88, 12, 0.1);
   --accent-border: rgba(234, 88, 12, 0.5);
+  --accent-2: #ffc738;       /* gold, secondary accent */
+  --accent-2-bg: rgba(255, 199, 56, 0.15);
 
   --social-bg: rgba(244, 243, 236, 0.5);
   --shadow: rgba(0, 0, 0, 0.12) 0 10px 20px -5px, rgba(0, 0, 0, 0.08) 0 4px 8px -2px;
