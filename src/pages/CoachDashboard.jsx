@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { supabase } from "../lib/supabase";
+import { PUBLIC_PROFILE_COLUMNS } from "../lib/profileColumns";
 import "./Discovery.css";
 
 export default function CoachDashboard() {
@@ -60,7 +61,7 @@ export default function CoachDashboard() {
 
       const { data: rosterData, error: rosterError } = await supabase
         .from("profiles")
-        .select("*")
+        .select(PUBLIC_PROFILE_COLUMNS)
         .eq("team_id", user.team_id)
         .eq("role", "Player");
 
@@ -179,7 +180,7 @@ export default function CoachDashboard() {
       // A new player just joined the roster.
       const { data: rosterData } = await supabase
         .from("profiles")
-        .select("*")
+        .select(PUBLIC_PROFILE_COLUMNS)
         .eq("team_id", user.team_id)
         .eq("role", "Player");
       setRoster(rosterData || []);

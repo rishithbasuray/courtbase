@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { PUBLIC_PROFILE_COLUMNS } from "../lib/profileColumns";
 import "./Discovery.css";
 
 export default function TeamProfile() {
@@ -26,7 +27,7 @@ export default function TeamProfile() {
 
       const { data: rosterData } = await supabase
         .from("profiles")
-        .select("*")
+        .select(PUBLIC_PROFILE_COLUMNS)
         .eq("team_id", id);
 
       setTeam(teamData);

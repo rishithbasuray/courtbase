@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import { PUBLIC_PROFILE_COLUMNS } from "../lib/profileColumns";
 import "./Discovery.css";
 
 export default function Players() {
@@ -15,7 +16,7 @@ export default function Players() {
     async function fetchData() {
       const { data: playerData, error: playerError } = await supabase
         .from("profiles")
-        .select("*")
+        .select(PUBLIC_PROFILE_COLUMNS)
         .eq("role", "Player")
         .order("created_at", { ascending: false });
 

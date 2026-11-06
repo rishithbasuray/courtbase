@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../context/AuthContext";
+import { PUBLIC_PROFILE_COLUMNS } from "../lib/profileColumns";
 import "./Discovery.css";
 
 export default function PlayerProfile() {
@@ -22,7 +23,7 @@ export default function PlayerProfile() {
     async function fetchPlayer() {
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select(PUBLIC_PROFILE_COLUMNS)
         .eq("id", id)
         .single();
 

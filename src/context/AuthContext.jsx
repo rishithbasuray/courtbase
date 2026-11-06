@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
+import { PUBLIC_PROFILE_COLUMNS } from "../lib/profileColumns";
 
 const AuthContext = createContext(null);
 
@@ -10,7 +11,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        loadProfile(session.user.id);
+        loadProfile(session.user);
       } else {
         setLoading(false);
       }
@@ -18,7 +19,7 @@ export function AuthProvider({ children }) {
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        loadProfile(session.user.id);
+        loadProfile(session.user);
       } else {
         setUser(null);
         setLoading(false);
@@ -28,17 +29,19 @@ export function AuthProvider({ children }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
-  async function loadProfile(userId) {
+  // The public profile row has no email, so the signed-in user's own email
+  // is added from their auth account (which only they can see).
+  async function loadProfile(authUser) {
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
-      .eq("id", userId)
+      .select(PUBLIC_PROFILE_COLUMNS)
+      .eq("id", authUser.id)
       .single();
 
     if (error) {
       console.error("Failed to load profile:", error);
     } else {
-      setUser(data);
+      setUser({ ...data, email: authUser.email });
     }
     setLoading(false);
   }
@@ -60,7 +63,7 @@ export function AuthProvider({ children }) {
     if (error) throw error;
 
     if (data.session) {
-      await loadProfile(data.user.id);
+      await loadProfile(data.user);
     }
   }
 
@@ -70,12 +73,12 @@ export function AuthProvider({ children }) {
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("*")
+      .select(PUBLIC_PROFILE_COLUMNS)
       .eq("id", data.user.id)
       .single();
     if (profileError) throw profileError;
 
-    return profile;
+    return { ...profile, email: data.user.email };
   }
 
   async function logout() {
@@ -137,7 +140,8 @@ export function AuthProvider({ children }) {
 
   async function refreshProfile() {
     if (!user) return;
-    await loadProfile(user.id);
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) await loadProfile(session.user);
   }
 
   return (
